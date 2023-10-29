@@ -6,10 +6,7 @@ from psycopg2.extras import DictCursor
 from llama_index import VectorStoreIndex, SimpleDirectoryReader, StorageContext, load_index_from_storage
 import logging
 import sys
-from app import app
-
-# Configuration
-# app.config['DATABASE_URI'] = os.environ.get('DATABASE_URI')  # Use an environment variable for your database URI
+from models import app
 
 # Initialize OpenAI API
 openai.api_key = os.environ.get('OPENAI_API_KEY')  # This could also be an environment variable
