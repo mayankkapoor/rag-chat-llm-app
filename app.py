@@ -38,27 +38,12 @@ def health_check():
         connection = psycopg2.connect(app.config['DATABASE_URI'])
         cursor = connection.cursor()
         cursor.execute('SELECT 1')  # Simple query to check the database connection
-        print("DB SELECT 1 query exected")
         cursor.close()
         connection.close()
         
         return jsonify({"status": "Healthy", "database": "Connected"}), 200
     except Exception as e:
         return jsonify({"status": "Unhealthy", "error": str(e)}), 500
-
-@app.route('/ask', methods=['POST'])
-def ask():
-    question = request.json.get('question', '')
-
-    query_engine = index.as_query_engine()
-    response = query_engine.query(question)
-    print(type(response))
-    answer = response.response
-
-    # # Save to database (optional)
-    # save_question_and_answer(question, answer)
-
-    return jsonify({"answer": answer})
 
 def save_question_and_answer(question, answer):
     # Connect to the database
@@ -71,6 +56,20 @@ def save_question_and_answer(question, answer):
 
     cursor.close()
     connection.close()
+
+@app.route('/ask', methods=['POST'])
+def ask():
+    question = request.json.get('question', '')
+
+    query_engine = index.as_query_engine()
+    response = query_engine.query(question)
+    print(type(response))
+    answer = response.response
+
+    # Save to database for display later
+    save_question_and_answer(question, answer)
+
+    return jsonify({"answer": answer})
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8080)
